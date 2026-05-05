@@ -29,6 +29,9 @@ const contractAbi = [
   "function settleLocalWager(uint256 wagerId, bool playerWon) external",
   "function cancelLocalWager(uint256 wagerId) external",
   "function wagers(uint256) view returns (address player, uint256 stake, uint8 status)",
+  "function lostStakeTotal() view returns (uint256)",
+  "function playerLostStake(address) view returns (uint256)",
+  "function vaultBalance() view returns (uint256)",
 ];
 
 app.use(express.json());

@@ -24,6 +24,16 @@ const resetButton = document.querySelector("#reportResultButton");
 const board = document.querySelector("#board");
 const columnControls = document.querySelector("#columnControls");
 const leaderboard = document.querySelector("#leaderboard");
+const gameViewTab = document.querySelector("#gameViewTab");
+const vaultViewTab = document.querySelector("#vaultViewTab");
+const gameView = document.querySelector("#gameView");
+const vaultView = document.querySelector("#vaultView");
+const vaultBalance = document.querySelector("#vaultBalance");
+const vaultLostStake = document.querySelector("#vaultLostStake");
+const vaultPlayerLoss = document.querySelector("#vaultPlayerLoss");
+const vaultContractAddress = document.querySelector("#vaultContractAddress");
+const refreshVaultButton = document.querySelector("#refreshVaultButton");
+const vaultMessage = document.querySelector("#vaultMessage");
 
 const ROWS = 6;
 const COLS = 7;
@@ -69,6 +79,9 @@ function bindEvents() {
   settleButton.addEventListener("click", settleFinishedWager);
   refundButton.addEventListener("click", refundDraw);
   resetButton.addEventListener("click", resetBoard);
+  gameViewTab.addEventListener("click", () => showAppView("game"));
+  vaultViewTab.addEventListener("click", () => showAppView("vault"));
+  refreshVaultButton.addEventListener("click", loadVault);
 }
 
 function setMode(nextMode) {
@@ -266,6 +279,7 @@ async function settleFinishedWager() {
     wagerStatus.textContent = playerWon ? "Stake returned to your wallet." : "Stake is held in the contract.";
     updateControls();
     loadLeaderboard();
+    loadVault();
   } catch (error) {
     wagerStatus.textContent = cleanWalletError(error);
   }
@@ -383,9 +397,61 @@ async function loadLeaderboard() {
   }
 }
 
+function showAppView(view) {
+  const isVault = view === "vault";
+  gameView.classList.toggle("hidden", isVault);
+  vaultView.classList.toggle("hidden", !isVault);
+  gameViewTab.classList.toggle("active", !isVault);
+  vaultViewTab.classList.toggle("active", isVault);
+
+  if (isVault) {
+    loadVault();
+  }
+}
+
+async function loadVault() {
+  const contractAddress = contractConfig.contractAddress || getSavedContractAddress() || currentGame?.contractAddress || "";
+  vaultMessage.textContent = "";
+
+  if (!contractAddress) {
+    vaultBalance.textContent = "No contract yet";
+    vaultLostStake.textContent = "No contract yet";
+    vaultPlayerLoss.textContent = "No contract yet";
+    vaultContractAddress.textContent = "Start a wager first";
+    return;
+  }
+
+  vaultContractAddress.textContent = shortAddress(contractAddress);
+
+  try {
+    const provider = await getBrowserProvider();
+    const balance = await provider.getBalance(contractAddress);
+    const contract = new ethers.Contract(contractAddress, contractConfig.contractAbi, provider.getSigner());
+
+    vaultBalance.textContent = formatEth(balance);
+
+    try {
+      const totalLost = await contract.lostStakeTotal();
+      vaultLostStake.textContent = formatEth(totalLost);
+    } catch (_error) {
+      vaultLostStake.textContent = "Not tracked on this contract";
+    }
+
+    try {
+      const signerAddress = await provider.getSigner().getAddress();
+      const playerLoss = await contract.playerLostStake(signerAddress);
+      vaultPlayerLoss.textContent = formatEth(playerLoss);
+    } catch (_error) {
+      vaultPlayerLoss.textContent = "Not tracked on this contract";
+    }
+  } catch (error) {
+    vaultMessage.textContent = cleanWalletError(error);
+  }
+}
+
 async function getOrDeployContract(stakeWei) {
   const configuredAddress = contractConfig.contractAddress || getSavedContractAddress();
-  if (configuredAddress && await hasContractCode(configuredAddress)) {
+  if (configuredAddress && await isCompatibleVaultContract(configuredAddress)) {
     return getContract(configuredAddress);
   }
 
@@ -448,6 +514,20 @@ async function hasContractCode(address) {
     const code = await provider.getCode(address);
     return code && code !== "0x";
   } catch (_error) {
+    return false;
+  }
+}
+
+async function isCompatibleVaultContract(address) {
+  if (!await hasContractCode(address)) return false;
+
+  try {
+    const contract = await getContract(address);
+    await contract.vaultBalance();
+    await contract.lostStakeTotal();
+    return true;
+  } catch (_error) {
+    localStorage.removeItem(SAVED_CONTRACT_KEY);
     return false;
   }
 }

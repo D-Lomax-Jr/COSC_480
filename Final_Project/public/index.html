@@ -4,9 +4,21 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Connect 4 Wagers</title>
-    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/styles.css?v=chips-static" />
   </head>
   <body>
+    <div class="chip-background" aria-hidden="true">
+      <img src="/assets/chip-red.png" alt="" />
+      <img src="/assets/chip-yellow.png" alt="" />
+      <img src="/assets/chip-red.png" alt="" />
+      <img src="/assets/chip-yellow.png" alt="" />
+      <img src="/assets/chip-red.png" alt="" />
+      <img src="/assets/chip-yellow.png" alt="" />
+      <img src="/assets/chip-red.png" alt="" />
+      <img src="/assets/chip-yellow.png" alt="" />
+      <img src="/assets/chip-red.png" alt="" />
+      <img src="/assets/chip-yellow.png" alt="" />
+    </div>
     <main class="shell">
       <section id="authPanel" class="auth-panel">
         <div class="brand-block">
@@ -45,6 +57,12 @@
           </div>
         </header>
 
+        <div class="view-tabs" role="tablist" aria-label="App views">
+          <button id="gameViewTab" class="view-tab active" type="button">Game</button>
+          <button id="vaultViewTab" class="view-tab" type="button">Vault</button>
+        </div>
+
+        <section id="gameView" class="app-view">
         <section class="control-band">
           <div class="control-group">
             <span class="label">Wallet</span>
@@ -92,6 +110,37 @@
             <h2>Leaderboard</h2>
             <ol id="leaderboard" class="leaderboard"></ol>
           </aside>
+        </section>
+        </section>
+
+        <section id="vaultView" class="vault-view app-view hidden">
+          <div class="vault-hero">
+            <p class="eyebrow">Smart Contract Vault</p>
+            <h2>Lost test ETH storage</h2>
+            <p>When the logged-in player loses and settles the wager, the stake stays inside the deployed contract. This panel reads that contract balance from Sepolia.</p>
+          </div>
+
+          <div class="vault-grid">
+            <article class="vault-card">
+              <span class="label">Contract Balance</span>
+              <strong id="vaultBalance">Connect wallet to view</strong>
+            </article>
+            <article class="vault-card">
+              <span class="label">Tracked Lost Stakes</span>
+              <strong id="vaultLostStake">Unavailable</strong>
+            </article>
+            <article class="vault-card">
+              <span class="label">Your Recorded Losses</span>
+              <strong id="vaultPlayerLoss">Unavailable</strong>
+            </article>
+            <article class="vault-card">
+              <span class="label">Contract Address</span>
+              <strong id="vaultContractAddress">No contract yet</strong>
+            </article>
+          </div>
+
+          <button id="refreshVaultButton" type="button">Refresh Vault</button>
+          <p id="vaultMessage" class="message" role="status"></p>
         </section>
       </section>
     </main>

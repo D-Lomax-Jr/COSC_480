@@ -27,6 +27,7 @@ body {
   margin: 0;
   color: var(--ink);
   font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  isolation: isolate;
   background:
     linear-gradient(115deg, rgba(103, 240, 255, 0.09), transparent 34%),
     linear-gradient(245deg, rgba(255, 79, 216, 0.08), transparent 30%),
@@ -39,6 +40,7 @@ body {
 body::before {
   position: fixed;
   inset: 0;
+  z-index: 0;
   pointer-events: none;
   content: "";
   background:
@@ -48,6 +50,45 @@ body::before {
   mix-blend-mode: screen;
   opacity: 0.34;
 }
+
+.chip-background {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.chip-background img {
+  position: absolute;
+  top: var(--y);
+  left: var(--x);
+  width: var(--size);
+  height: var(--size);
+  object-fit: contain;
+  opacity: var(--opacity);
+  filter: drop-shadow(0 0 18px var(--glow)) drop-shadow(0 18px 28px rgba(0, 0, 0, 0.42));
+  transform: rotate(var(--rotate));
+}
+
+.chip-background img:nth-child(odd) {
+  --glow: rgba(255, 59, 107, 0.46);
+}
+
+.chip-background img:nth-child(even) {
+  --glow: rgba(255, 216, 77, 0.42);
+}
+
+.chip-background img:nth-child(1) { --x: 3%; --y: 7%; --size: 74px; --opacity: 0.25; --rotate: -18deg; }
+.chip-background img:nth-child(2) { --x: 15%; --y: 3%; --size: 92px; --opacity: 0.22; --rotate: 12deg; }
+.chip-background img:nth-child(3) { --x: 31%; --y: 9%; --size: 66px; --opacity: 0.2; --rotate: 24deg; }
+.chip-background img:nth-child(4) { --x: 47%; --y: 6%; --size: 106px; --opacity: 0.24; --rotate: -10deg; }
+.chip-background img:nth-child(5) { --x: 70%; --y: 5%; --size: 90px; --opacity: 0.22; --rotate: 18deg; }
+.chip-background img:nth-child(6) { --x: 88%; --y: 4%; --size: 78px; --opacity: 0.22; --rotate: -22deg; }
+.chip-background img:nth-child(7) { --x: 8%; --y: 72%; --size: 86px; --opacity: 0.15; --rotate: 15deg; }
+.chip-background img:nth-child(8) { --x: 26%; --y: 58%; --size: 62px; --opacity: 0.14; --rotate: -28deg; }
+.chip-background img:nth-child(9) { --x: 76%; --y: 70%; --size: 76px; --opacity: 0.16; --rotate: 30deg; }
+.chip-background img:nth-child(10) { --x: 92%; --y: 54%; --size: 98px; --opacity: 0.14; --rotate: -12deg; }
 
 button,
 input {
@@ -98,6 +139,7 @@ input:focus {
 
 .shell {
   position: relative;
+  z-index: 1;
   width: min(1180px, calc(100% - 32px));
   margin: 0 auto;
   padding: 32px 0;
@@ -255,6 +297,30 @@ p {
   gap: 14px;
   padding: 14px;
   margin-bottom: 18px;
+}
+
+.view-tabs {
+  display: inline-grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  min-width: 260px;
+  margin-bottom: 18px;
+  padding: 4px;
+  border: 1px solid rgba(103, 240, 255, 0.18);
+  border-radius: 8px;
+  background: rgba(2, 7, 16, 0.76);
+}
+
+.view-tab {
+  min-height: 38px;
+  color: var(--muted);
+  background: transparent;
+  box-shadow: none;
+}
+
+.view-tab.active {
+  color: #07101a;
+  background: linear-gradient(180deg, var(--green), #46d9f4);
 }
 
 .control-group {
@@ -460,10 +526,58 @@ p {
   font-size: 0.82rem;
 }
 
+.vault-view {
+  display: grid;
+  gap: 18px;
+}
+
+.vault-hero {
+  max-width: 760px;
+}
+
+.vault-hero h2 {
+  margin-bottom: 10px;
+  color: #f7fbff;
+  font-size: clamp(1.8rem, 4vw, 3.4rem);
+  line-height: 1;
+  text-shadow: 0 0 24px rgba(103, 240, 255, 0.24);
+}
+
+.vault-hero p {
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+.vault-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.vault-card {
+  display: grid;
+  gap: 10px;
+  min-height: 130px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(103, 240, 255, 0.08), transparent 46%),
+    var(--panel);
+  box-shadow: var(--shadow), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.vault-card strong {
+  overflow-wrap: anywhere;
+  color: var(--cyan);
+  font-size: 1.15rem;
+}
+
 @media (max-width: 920px) {
   .auth-panel,
   .play-layout,
-  .control-band {
+  .control-band,
+  .vault-grid {
     grid-template-columns: 1fr;
   }
 
