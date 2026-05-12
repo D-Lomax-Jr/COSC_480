@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Connect 4 Wagers</title>
+    <link rel="stylesheet" href="/styles.css?v=chips-static" />
+  </head>
+  <body>
+    <div class="chip-background" aria-hidden="true">
+      <img src="/assets/chip-red.png" alt="" />
+      <img src="/assets/chip-yellow.png" alt="" />
+      <img src="/assets/chip-red.png" alt="" />
+      <img src="/assets/chip-yellow.png" alt="" />
+      <img src="/assets/chip-red.png" alt="" />
+      <img src="/assets/chip-yellow.png" alt="" />
+      <img src="/assets/chip-red.png" alt="" />
+      <img src="/assets/chip-yellow.png" alt="" />
+      <img src="/assets/chip-red.png" alt="" />
+      <img src="/assets/chip-yellow.png" alt="" />
+    </div>
+    <main class="shell">
+      <section id="authPanel" class="auth-panel">
+        <div class="brand-block">
+          <p class="eyebrow">Senior Capstone</p>
+          <h1>Connect 4 Wagers</h1>
+          <p>Sign in, connect a test wallet, start a local Connect 4 wager, and settle the result with test ETH.</p>
+        </div>
+
+        <form id="authForm" class="auth-card">
+          <div class="tabs" role="tablist" aria-label="Authentication mode">
+            <button id="loginTab" class="tab active" type="button">Log In</button>
+            <button id="signupTab" class="tab" type="button">Sign Up</button>
+          </div>
+          <label>
+            Username
+            <input id="usernameInput" name="username" autocomplete="username" required minlength="3" maxlength="50" />
+          </label>
+          <label>
+            Password
+            <input id="passwordInput" name="password" type="password" autocomplete="current-password" required minlength="6" />
+          </label>
+          <button id="authSubmit" class="primary-action" type="submit">Log In</button>
+          <p id="authMessage" class="message" role="status"></p>
+        </form>
+      </section>
+
+      <section id="gamePanel" class="game-panel hidden">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Connect 4 Wagers</p>
+            <h1>Local Wager</h1>
+          </div>
+          <div class="account-strip">
+            <span id="signedInAs"></span>
+            <button id="logoutButton" class="ghost-button" type="button">Log Out</button>
+          </div>
+        </header>
+
+        <div class="view-tabs" role="tablist" aria-label="App views">
+          <button id="gameViewTab" class="view-tab active" type="button">Game</button>
+          <button id="vaultViewTab" class="view-tab" type="button">Vault</button>
+        </div>
+
+        <section id="gameView" class="app-view">
+        <section class="control-band">
+          <div class="control-group">
+            <span class="label">Wallet</span>
+            <strong id="walletLabel">Not connected</strong>
+            <button id="walletButton" type="button">Connect Wallet</button>
+          </div>
+          <div class="control-group">
+            <label for="stakeInput" class="label">Stake</label>
+            <div class="stake-row">
+              <input id="stakeInput" type="number" min="0.0001" max="10" step="0.0001" value="0.01" />
+              <span>test ETH</span>
+            </div>
+            <button id="queueButton" type="button">Start Wager</button>
+          </div>
+          <div class="control-group">
+            <span class="label">Contract</span>
+            <strong id="contractLabel">Checking...</strong>
+            <button id="cancelQueueButton" class="ghost-button" type="button" disabled>New Board</button>
+          </div>
+        </section>
+
+        <section class="play-layout">
+          <aside class="side-panel">
+            <h2>Players</h2>
+            <div id="playersList" class="players-list"></div>
+            <div class="status-card">
+              <span class="label">Status</span>
+              <strong id="gameStatus">Connect wallet, then start a wager</strong>
+            </div>
+            <div class="status-card">
+              <span class="label">Escrow</span>
+              <p id="wagerStatus">The stake is deposited before the board starts.</p>
+              <button id="createWagerButton" type="button" disabled>Settle Wager</button>
+              <button id="joinWagerButton" type="button" disabled>Refund Draw</button>
+              <button id="reportResultButton" type="button" disabled>Reset Board</button>
+            </div>
+          </aside>
+
+          <section class="board-section">
+            <div id="columnControls" class="column-controls" aria-label="Drop disc controls"></div>
+            <div id="board" class="board" aria-label="Connect 4 board"></div>
+          </section>
+
+          <aside class="side-panel">
+            <h2>Leaderboard</h2>
+            <ol id="leaderboard" class="leaderboard"></ol>
+          </aside>
+        </section>
+        </section>
+
+        <section id="vaultView" class="vault-view app-view hidden">
+          <div class="vault-hero">
+            <p class="eyebrow">Smart Contract Vault</p>
+            <h2>Lost test ETH storage</h2>
+            <p>When the logged-in player loses and settles the wager, the stake stays inside the deployed contract. This panel reads that contract balance from Sepolia.</p>
+          </div>
+
+          <div class="vault-grid">
+            <article class="vault-card">
+              <span class="label">Contract Balance</span>
+              <strong id="vaultBalance">Connect wallet to view</strong>
+            </article>
+            <article class="vault-card">
+              <span class="label">Tracked Lost Stakes</span>
+              <strong id="vaultLostStake">Unavailable</strong>
+            </article>
+            <article class="vault-card">
+              <span class="label">Your Recorded Losses</span>
+              <strong id="vaultPlayerLoss">Unavailable</strong>
+            </article>
+            <article class="vault-card">
+              <span class="label">Contract Address</span>
+              <strong id="vaultContractAddress">No contract yet</strong>
+            </article>
+          </div>
+
+          <button id="refreshVaultButton" type="button">Refresh Vault</button>
+          <p id="vaultMessage" class="message" role="status"></p>
+        </section>
+      </section>
+    </main>
+
+    <script src="/vendor/ethers.umd.min.js"></script>
+    <script src="/app.js"></script>
+  </body>
+</html>
